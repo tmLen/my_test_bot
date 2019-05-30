@@ -8,7 +8,7 @@ PLANETS = ['Mars', 'Mercury', 'Venus', 'Jupiter', 'Saturn', 'Uranus', 'Neptune',
 #function thet greets user and explain about what is this bot
 def greet_user(bot, update):
     greet = 'Привет,' + update.message.chat.first_name + '\n'
-    text = greet + 'Тестовый бот\n/planet + <Имя планеты> Бот определит в каком она созвездии\n/help чтобы посмотреть список планет'
+    text = greet + 'Тестовый бот\n/planet + <Имя планеты> Бот определит в каком она созвездии\n/help чтобы посмотреть список планет\n/wordcount + <фраза> вернет количество слов в фразе\n/next_full_moon покажет дату ближайшего полнолуния'
     update.message.reply_text(text)
 
 #function outs list of avalible planets
@@ -54,6 +54,7 @@ def get_constellation(bot, update):
     else:
         update.message.reply_text('Нет планеты '+ planet_name + '\nиспользуйте /help')
 
+#takes user frase and returns words count
 def wordcount(bot, update):
     user_words = update.message.text.split()
     words_count = 0
@@ -64,6 +65,10 @@ def wordcount(bot, update):
     if words_count == 0:
         update.message.reply_text('Нужно ввести текст после команды /wordcount и бот посчитает количество слов в нём\nНапример "/wordcount Тут три слова"')
 
+#calculate date of next full moon
+def next_full_moon(bot, update):
+    update.message.reply_text(f'Ближайшая полная луна будет {ephem.next_full_moon(datetime.date.today())}')
+
 def main():
     mybot = Updater('750789173:AAGVvB-vFBIl66gsYLqnbzUqSVP1fh9bphM', request_kwargs=PROXY)
     dp = mybot.dispatcher
@@ -72,8 +77,9 @@ def main():
     dp.add_handler(CommandHandler('help', help_user))
     dp.add_handler(CommandHandler("planet", get_constellation))
     dp.add_handler(CommandHandler('wordcount', wordcount))
-    dp.add_handler(MessageHandler(Filters.text, talk_to_me))
+    dp.add_handler(CommandHandler('next_full_moon', next_full_moon))
 
+    dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     mybot.start_polling(5, 20)
     mybot.idle()
 main()
