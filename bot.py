@@ -54,6 +54,14 @@ def get_constellation(bot, update):
     else:
         update.message.reply_text('Нет планеты '+ planet_name + '\nиспользуйте /help')
 
+def wordcount(bot, update):
+    user_words = update.message.text.split()
+    words_count = 0
+    for word in user_words:
+        if word != '/wordcount' and word != '':
+            words_count += 1
+    update.message.reply_text(words_count)
+
 def main():
     mybot = Updater('750789173:AAGVvB-vFBIl66gsYLqnbzUqSVP1fh9bphM', request_kwargs=PROXY)
     dp = mybot.dispatcher
@@ -61,6 +69,7 @@ def main():
     dp.add_handler(CommandHandler('start', greet_user))
     dp.add_handler(CommandHandler('help', help_user))
     dp.add_handler(CommandHandler("planet", get_constellation))
+    dp.add_handler(CommandHandler('wordcount', wordcount))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
 
     mybot.start_polling(5, 20)
