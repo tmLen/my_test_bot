@@ -61,6 +61,8 @@ def wordcount(bot, update):
         if word != '/wordcount' and word != '':
             words_count += 1
     update.message.reply_text(words_count)
+    if words_count == 0:
+        update.message.reply_text('Нужно ввести текст после команды /wordcount и бот посчитает количество слов в нём\nНапример "/wordcount Тут три слова"')
 
 def main():
     mybot = Updater('750789173:AAGVvB-vFBIl66gsYLqnbzUqSVP1fh9bphM', request_kwargs=PROXY)
