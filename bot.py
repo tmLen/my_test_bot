@@ -93,6 +93,28 @@ def cities_game(bot, update, args):
             else: 
                 update.message.reply_text(result)
 
+def calc(bot, update):
+    operators = ['+', '-', '*', '/', '%']
+    command = update.message.text.replace('/calc ', '')
+    operator = ''
+    for opr in operators:
+        if operator in command:
+            print('success')
+            operator = opr
+            print(operator)
+            break
+    print(operator, command.split(operator)[0], command.split(operator)[1])
+    if operator == '+':
+        update.message.reply_text(float(command.split(operator)[0]) + float(command.split(operator)[1]))
+    elif operator == '-':
+        update.message.reply_text(float(command.split(operator)[0]) - float(command.split(operator)[1]))
+    elif operator == '*':
+        update.message.reply_text(float(command.split(operator)[0]) * float(command.split(operator)[1]))
+    elif operator == '/':
+        update.message.reply_text(float(command.split(operator)[0]) / float(command.split(operator)[1]))
+    elif operator == '%':
+        update.message.reply_text(float(command.split(operator)[0]) % float(command.split(operator)[1]))
+
 def main():
 
     mybot = Updater('750789173:AAGVvB-vFBIl66gsYLqnbzUqSVP1fh9bphM', request_kwargs=PROXY)
@@ -104,7 +126,7 @@ def main():
     dp.add_handler(CommandHandler('wordcount', wordcount))
     dp.add_handler(CommandHandler('next_full_moon', next_full_moon))
     dp.add_handler(CommandHandler('cities', cities_game, pass_args=True))
-
+    dp.add_handler(CommandHandler('calc', calc))
     mybot.start_polling(5, 20)
     mybot.idle()
 main()
