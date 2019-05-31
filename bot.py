@@ -1,14 +1,23 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import ephem
 import datetime
+import json
+import logging
+
+from game import Game
+
 
 PROXY = {'proxy_url': 'socks5://en.socksy.seriyps.ru:7777', 'urllib3_proxy_kwargs': {'username': 'tg-tmlen', 'password': 'q1n5spUC'}}
+logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO, filename='bot.log')
+
 PLANETS = ['Mars', 'Mercury', 'Venus', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto', 'Sun', 'Moon']
+game = Game()
+
 
 #function thet greets user and explain about what is this bot
 def greet_user(bot, update):
     greet = 'Привет,' + update.message.chat.first_name + '\n'
-    text = greet + 'Тестовый бот\n/planet + <Имя планеты> Бот определит в каком она созвездии\n/help чтобы посмотреть список планет\n/wordcount + <фраза> вернет количество слов в фразе\n/next_full_moon покажет дату ближайшего полнолуния'
+    text = greet + 'Тестовый бот\n/planet + <Имя планеты> Бот определит в каком она созвездии\n/help чтобы посмотреть список планет\n/wordcount + <фраза> вернет количество слов в фразе\n/next_full_moon покажет дату ближайшего полнолуния\n/cities запустит игру в города'
     update.message.reply_text(text)
 
 #function outs list of avalible planets
@@ -69,7 +78,23 @@ def wordcount(bot, update):
 def next_full_moon(bot, update):
     update.message.reply_text(f'Ближайшая полная луна будет {ephem.next_full_moon(datetime.date.today())}')
 
+def cities_game(bot, update, args):
+    if len(args) == 0:
+        if game.prev_city[-1] in ['ь','ы','ъ']:
+            update.message.reply_text(game.prev_city + f', вам на {game.prev_city[-2]}')
+        else:
+            update.message.reply_text(game.prev_city + f', вам на {game.prev_city[-1]}')
+    else:
+        if game.player_turn:
+            result = game.try_city(args[0])
+            if result == args[0].lower():
+                update.message.reply_text(game.bot_turn())
+
+            else: 
+                update.message.reply_text(result)
+
 def main():
+
     mybot = Updater('750789173:AAGVvB-vFBIl66gsYLqnbzUqSVP1fh9bphM', request_kwargs=PROXY)
     dp = mybot.dispatcher
 
@@ -78,8 +103,8 @@ def main():
     dp.add_handler(CommandHandler("planet", get_constellation))
     dp.add_handler(CommandHandler('wordcount', wordcount))
     dp.add_handler(CommandHandler('next_full_moon', next_full_moon))
+    dp.add_handler(CommandHandler('cities', cities_game, pass_args=True))
 
-    dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     mybot.start_polling(5, 20)
     mybot.idle()
 main()
