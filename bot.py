@@ -127,6 +127,6 @@ def main():
     dp.add_handler(CommandHandler('next_full_moon', next_full_moon))
     dp.add_handler(CommandHandler('cities', cities_game, pass_args=True))
     dp.add_handler(CommandHandler('calc', calc))
-    mybot.start_polling(5, 20)
+    mybot.start_polling()
     mybot.idle()
 main()
